@@ -45,7 +45,11 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
                 onClose?.();
             }, 1500);
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Upload failed');
+            console.error("Upload error:", err);
+            const status = err.response?.status;
+            const statusText = err.response?.statusText;
+            const detail = err.response?.data?.detail;
+            setError(detail || `Upload failed: ${status || 'Unknown'} ${statusText || ''} - ${err.message}`);
         } finally {
             setUploading(false);
         }
