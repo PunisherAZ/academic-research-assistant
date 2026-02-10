@@ -33,10 +33,7 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
         try {
             await axios.post(
                 `${API_URL}/api/papers/${paperId}/upload-pdf`,
-                formData,
-                {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                }
+                formData
             );
 
             setUploadSuccess(true);
