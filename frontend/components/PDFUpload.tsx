@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { FileUp, X, CheckCircle2 } from "lucide-react";
-import axios from "axios";
-
-const API_URL = "";
+import { uploadPdf } from "../app/actions";
 
 interface PDFUploadProps {
     paperId: string;
@@ -29,12 +27,11 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('paperId', paperId);
 
         try {
-            await axios.post(
-                `${API_URL}/api/papers/${paperId}/upload-pdf`,
-                formData
-            );
+            console.log("Starting upload via Server Action...");
+            await uploadPdf(formData);
 
             setUploadSuccess(true);
             setTimeout(() => {
@@ -43,10 +40,7 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
             }, 1500);
         } catch (err: any) {
             console.error("Upload error:", err);
-            const status = err.response?.status;
-            const statusText = err.response?.statusText;
-            const detail = err.response?.data?.detail;
-            setError(detail || `Upload failed: ${status || 'Unknown'} ${statusText || ''} - ${err.message}`);
+            setError(err.message || 'Upload failed');
         } finally {
             setUploading(false);
         }
@@ -106,7 +100,7 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
                     <label
                         htmlFor={`pdf-upload-${paperId}`}
                         className={`px-6 py-2 bg-primary text-primary-foreground rounded-lg cursor-pointer 
-                            hover:bg-primary/90 transition inline-block ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                hover:bg-primary/90 transition inline-block ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                         {uploading ? 'Uploading...' : 'Choose File'}
                     </label>
