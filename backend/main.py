@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, UploadFile, File
+from fastapi import FastAPI, HTTPException, Depends, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -241,21 +241,25 @@ def delete_note(paper_id: str, db: Session = Depends(get_db)):
 # PDF STORAGE API
 # =============================================================================
 
-@app.post("/api/papers/{paper_id}/upload-pdf")
+@app.post("/api/upload-pdf")
 async def upload_pdf(
-    paper_id: str,
+    paper_id: str = Form(...),
     file: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    """Upload a PDF for a paper"""
+    """Upload a PDF for a paper (accepts ID via form data to handle URLs)"""
     # Validate file type
     if not file.content_type == "application/pdf":
         raise HTTPException(status_code=400, detail="File must be a PDF")
     
     # Check if paper exists
+    # If the ID is a URL, it might not be in our DB yet if we haven't saved it? 
+    # Usually we save metadata first. 
     paper = db.query(Paper).filter(Paper.id == paper_id).first()
     if not paper:
-        raise HTTPException(status_code=404, detail="Paper not found")
+        # If paper doesn't exist but we are uploading, maybe we should create a stub or error?
+        # For this app, we assume it's saved.
+        raise HTTPException(status_code=404, detail=f"Paper not found: {paper_id}")
     
     # Save PDF
     pdf_path = await save_pdf(file, paper_id)
@@ -272,9 +276,9 @@ async def upload_pdf(
     }
 
 
-@app.get("/api/pdfs/{paper_id}")
+@app.get("/api/pdfs")
 async def download_pdf(paper_id: str):
-    """Download/view a PDF file"""
+    """Download/view a PDF file (accepts ID via query param)"""
     if not pdf_exists(paper_id):
         raise HTTPException(status_code=404, detail="PDF not found")
     

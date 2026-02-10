@@ -17,8 +17,7 @@ export async function uploadPdf(formData: FormData) {
         }
 
         const backendUrl = process.env.BACKEND_URL || 'http://academic-backend:8000';
-        // Encode paperId to handle special characters (like slashes in URLs)
-        const uploadUrl = `${backendUrl}/api/papers/${encodeURIComponent(paperId)}/upload-pdf`;
+        const uploadUrl = `${backendUrl}/api/upload-pdf`;
 
         console.log(`[Server Action] Uploading to ${uploadUrl}`);
 

@@ -121,7 +121,7 @@ export default function SavedPapersPanel({
 
     const handleViewPDF = (paperId: string) => {
         const API_URL = "";
-        window.open(`${API_URL}/api/pdfs/${paperId}`, '_blank');
+        window.open(`${API_URL}/api/pdfs?paper_id=${encodeURIComponent(paperId)}`, '_blank');
     };
 
     const handleEditNote = async (paperId: string) => {
