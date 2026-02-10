@@ -21,9 +21,13 @@ export async function uploadPdf(formData: FormData) {
 
         console.log(`[Server Action] Uploading to ${uploadUrl}`);
 
+        const backendFormData = new FormData();
+        if (file) backendFormData.append('file', file);
+        if (paperId) backendFormData.append('paper_id', paperId);
+
         const response = await fetch(uploadUrl, {
             method: 'POST',
-            body: formData,
+            body: backendFormData,
         });
 
         console.log(`[Server Action] Response status: ${response.status}`);
