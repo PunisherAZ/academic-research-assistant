@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  frontend:
+    # Use context '.' for local builds (when uploading this folder)
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: academic-frontend
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    environment:
+      # CRITICAL: Replace 'YOUR_SERVER_IP' with the actual LAN IP of your Homelab server
+      # Example: http://192.168.1.50:8099
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8099}
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: academic-backend
+    restart: unless-stopped
+    ports:
+      - "8099:8000"
+    volumes:
+      - academic_pdf_data:/app/data/pdfs
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/academic_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: academic-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=academic_db
+    volumes:
+      - academic_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d academic_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  academic_postgres_data:
+  academic_pdf_data:

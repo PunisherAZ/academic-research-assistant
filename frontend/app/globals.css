@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Soft Porcelain Background - Warm, calm, safe */
+        --background: 30 15% 96%;
+        /* Dark Slate Text - Softer than black, professional */
+        --foreground: 215 25% 20%;
+
+        /* Calm Teal Primary - Therapeutic, trustworthy */
+        --primary: 176 35% 45%;
+        --primary-foreground: 0 0% 98%;
+
+        /* Slate Blue Secondary - Stable, grounding */
+        --secondary: 215 25% 35%;
+        --secondary-foreground: 0 0% 98%;
+
+        /* White Card - Clean workspace */
+        --card: 0 0% 100%;
+        --card-foreground: 215 25% 20%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 215 25% 20%;
+
+        --muted: 215 15% 92%;
+        --muted-foreground: 215 15% 45%;
+
+        /* Soft Peach Accent - Approachable warmth */
+        --accent: 25 60% 85%;
+        --accent-foreground: 215 25% 20%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 0 0% 98%;
+
+        --border: 215 15% 88%;
+        --input: 215 15% 88%;
+        --ring: 176 35% 45%;
+
+        /* Slightly softer corners */
+        --radius: 0.75rem;
+    }
+}
+
+@layer base {
+    * {
+        border-color: hsl(var(--border));
+    }
+
+    body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+        font-family: var(--font-merriweather), serif;
+    }
+}
+
+@keyframes slide-in {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+}

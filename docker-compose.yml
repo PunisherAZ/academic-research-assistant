@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # FRONTEND (Next.js) - The "Counselor's Office"
+  # ---------------------------------------------------------------------------
+  frontend:
+    build: ./frontend
+    container_name: academic-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://10.4.10.164:8000
+      - NEXT_PUBLIC_SUPABASE_URL=http://supabase-kong:8000
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+    depends_on:
+      - backend
+    #      - supabase-db
+    networks:
+      - academic-net
+    restart: always
+
+  # ---------------------------------------------------------------------------
+  # BACKEND (Python/FastAPI) - The "Agent"
+  # ---------------------------------------------------------------------------
+  backend:
+    build: ./backend
+    container_name: academic-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=http://supabase-kong:8000
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY} # Optional: System-wide key
+      - DATABASE_URL=postgresql://researcher:GCU-Tool$$@postgres:5432/research_db
+    volumes:
+      - ./backend:/app
+      - ./data/pdfs:/app/pdfs # PDF storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - academic-net
+    restart: always
+
+  # ---------------------------------------------------------------------------
+  # POSTGRESQL - Local Database
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: academic-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=research_db
+      - POSTGRES_USER=researcher
+      - POSTGRES_PASSWORD=GCU-Tool$$
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    networks:
+      - academic-net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U researcher" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+  # ---------------------------------------------------------------------------
+  # SUPABASE (Self-Hosted) - The "Clerk"
+  # ---------------------------------------------------------------------------
+  #   supabase-db:
+  #     image: supabase/postgres:15.1.0.147
+  #     container_name: academic-db
+  #     ports:
+  #       - "54322:5432" # Offset to avoid collision
+  #     environment:
+  #       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  #     volumes:
+  #       - supabase-db-data:/var/lib/postgresql/data
+  #     networks:
+  #       - academic-net
+  #     healthcheck:
+  #       test: [ "CMD", "pg_isready", "-U", "postgres" ]
+  #       interval: 10s
+  #       timeout: 5s
+  #       retries: 5
+  #
+  #   supabase-kong:
+  #     image: kong:2.8.1
+  #     container_name: academic-kong
+  #     ports:
+  #       - "8001:8000" # API Gateway
+  #     environment:
+  #       KONG_DATABASE: "off"
+  #       KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+  #       # Simplified config for MVP - typically requires full Supabase stack
+  #       # For locally hosted MVP, we might abstract this, but adding for completeness
+  #     networks:
+  #       - academic-net
+
+networks:
+  academic-net:
+    driver: bridge
+
+volumes:
+  supabase-db-data:
