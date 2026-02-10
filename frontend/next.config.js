@@ -17,6 +17,11 @@ const nextConfig = {
             },
         ]
     },
+    experimental: {
+        serverActions: {
+            allowedOrigins: ['localhost:3000', 'localhost:3003', '10.4.10.164:3003']
+        }
+    }
 }
 
 module.exports = nextConfig
