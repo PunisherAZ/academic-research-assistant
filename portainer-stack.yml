@@ -6,16 +6,13 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
     container_name: academic-frontend
     restart: unless-stopped
     ports:
       - "3003:3000"
     environment:
-      # CRITICAL: Replace 'YOUR_SERVER_IP' with the actual LAN IP of your Homelab server
-      # Example: http://192.168.1.50:8099
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8099}
+      # Backend URL for server-side proxying (internal Docker DNS)
+      - BACKEND_URL=http://backend:8000
     depends_on:
       - backend
 

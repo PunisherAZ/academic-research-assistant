@@ -120,7 +120,7 @@ export default function SavedPapersPanel({
     };
 
     const handleViewPDF = (paperId: string) => {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const API_URL = "";
         window.open(`${API_URL}/api/pdfs/${paperId}`, '_blank');
     };
 

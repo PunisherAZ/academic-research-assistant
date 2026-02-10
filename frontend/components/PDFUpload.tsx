@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FileUp, X, CheckCircle2 } from "lucide-react";
 import axios from "axios";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = "";
 
 interface PDFUploadProps {
     paperId: string;
@@ -82,8 +82,8 @@ export default function PDFUpload({ paperId, onUploadComplete, onClose }: PDFUpl
             ) : (
                 <div
                     className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${dragActive
-                            ? 'border-primary bg-primary/5'
-                            : 'border-border hover:border-primary/50'
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
                         }`}
                     onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
                     onDragLeave={() => setDragActive(false)}

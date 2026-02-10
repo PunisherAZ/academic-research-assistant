@@ -36,7 +36,7 @@ export default function Home() {
         }, 4000);
     };
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const API_URL = "";
 
     const handleSearch = async (e?: React.FormEvent, searchQuery?: string) => {
         if (e) e.preventDefault();
@@ -48,7 +48,7 @@ export default function Home() {
         addToHistory(queryToSearch);
 
         try {
-            const res = await axios.post(`${API_URL}/search/openalex`, { query: queryToSearch });
+            const res = await axios.post("/search/openalex", { query: queryToSearch }); // Proxy handles URL
             setResults(res.data);
             setFilteredResults(res.data);
             if (res.data.length === 0) {
@@ -79,7 +79,7 @@ export default function Home() {
         try {
             // For now, we'll just use the keywords field for the search
             // In a more advanced implementation, we would pass all fields to the backend
-            const res = await axios.post(`${API_URL}/search/openalex`, {
+            const res = await axios.post("/search/openalex", {
                 query: searchQuery || "research"
             });
 
@@ -132,7 +132,7 @@ export default function Home() {
         };
 
         try {
-            const res = await axios.post(`${API_URL}${formatMap[format].endpoint}`, paper);
+            const res = await axios.post(`${formatMap[format].endpoint}`, paper);
             await navigator.clipboard.writeText(res.data);
             showToast(`${formatMap[format].name} citation copied!`, "success");
             setOpenCiteDropdown(null);
