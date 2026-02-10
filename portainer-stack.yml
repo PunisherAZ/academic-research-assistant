@@ -12,7 +12,7 @@ services:
       - "3003:3000"
     environment:
       # Backend URL for server-side proxying (internal Docker DNS)
-      - BACKEND_URL=http://backend:8000
+      - BACKEND_URL=http://academic-backend:8000
     depends_on:
       - backend
 
