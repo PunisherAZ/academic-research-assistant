@@ -18,6 +18,8 @@ app = FastAPI(title="Academic Research Agent", version="1.0.0")
 origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "http://localhost:3003",
+    "*", # Allow all for LAN access
 ]
 
 app.add_middleware(
