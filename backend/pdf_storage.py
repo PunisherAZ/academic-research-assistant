@@ -23,8 +23,9 @@ async def save_pdf(file: UploadFile, paper_id: str) -> str:
     if not file.content_type == "application/pdf":
         raise HTTPException(status_code=400, detail="File must be a PDF")
     
-    # Create file path
-    file_path = os.path.join(PDF_STORAGE_DIR, f"{paper_id}.pdf")
+    # Create file path - sanitize paper_id to be safe for filesystem
+    safe_filename = paper_id.replace(":", "_").replace("/", "_")
+    file_path = os.path.join(PDF_STORAGE_DIR, f"{safe_filename}.pdf")
     
     # Save file
     try:
@@ -35,7 +36,7 @@ async def save_pdf(file: UploadFile, paper_id: str) -> str:
         print(f"Failed to save PDF to {file_path}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Failed to save PDF: {str(e)}")
     
-    return f"/pdfs/{paper_id}.pdf"
+    return f"/pdfs/{safe_filename}.pdf"
 
 
 def get_pdf_path(paper_id: str) -> str:
@@ -48,7 +49,8 @@ def get_pdf_path(paper_id: str) -> str:
     Returns:
         Absolute path to PDF file
     """
-    return os.path.join(PDF_STORAGE_DIR, f"{paper_id}.pdf")
+    safe_filename = paper_id.replace(":", "_").replace("/", "_")
+    return os.path.join(PDF_STORAGE_DIR, f"{safe_filename}.pdf")
 
 
 def pdf_exists(paper_id: str) -> bool:
